@@ -1,7 +1,5 @@
 # Test 01
 
-* Root privileges required
-
 Bash script that sets up the following system properties on Ubuntu 18.04 server:
 * Time zone
 * Locale
@@ -14,7 +12,9 @@ Bash script that sets up the following system properties on Ubuntu 18.04 server:
 * Deploy Monit server and make it autostart on reboot
 * Set Nginx to proxy requests to the Monit server with the basic auth using `monit`/`tinom` credentials.
 
-## The following variables must be set up at the top of the bash file for full functionality:
+# The following variables must be set up at the top of the bash file for full functionality:
+* Root privileges required
+
 Variable | Description
 --- | ---
 TIMEZONE | Timezone which will be used in system
