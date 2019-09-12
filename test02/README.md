@@ -3,15 +3,15 @@
 ## The following variables must be set up for full functionality:
 Variable | Description
 --- | --- 
-install_nginx | (true | false) Install Nginx Or Not
-install_monit | (true | false) Is the monit must be installed
+install_nginx | (true or false) Install Nginx Or Not
+install_monit | (true or false) Is the monit must be installed
 timezone | Timezone which will be used in system
 locale | Locale which will be used in system 
 ssh_port | ssh port which will be used in system  
-ssh_root_permit | (yes | no) Allow root user login via ssh
+ssh_root_permit | (yes or no) Allow root user login via ssh
 monit_port | Monit port for web interface
 service_account | username to create
-service_account_usepassword | (true | false) is user allowed to login
+service_account_usepassword | (true or false) is user allowed to login
 service_account_pass | User password for created user
 htaccess_username | Basic auth nginx username
 htaccess_password | Basic auth nginx password
