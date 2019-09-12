@@ -1,0 +1,64 @@
+Write down a letter with your vision how to build a fail-safe server/system containing:
+
+Small Web-server with 2k users per day
+1TB relational database
+2 billion requests per day
+All data is highly sensitive.
+Acceptable data loss — 0.5hr.
+Acceptable downtime — 1hr.
+Drawings are welcome.
+Handwritten drawings — too.
+
+There is no fail if you have no experience in such planning — think how would you build such service. We'd like to know the way you're thinking and how do you tell your thoughts.
+
+We must change NS servers to our machines/servers, where NS1 links to our first server (next as MASTER), and NS2 links to our second server (next as SLAVE), "A" record links to self ip for all servers
+We did it for avoiding physical server problems such power absence etc. If problem appear on MASTER server, NS2 will responce data from its records
+here is some examples:
+
+MASTER DNS:
+first.example.com A 195.211.100.1
+secondary.example.com A 195.211.100.2
+example.com CNAME first.example.com
+
+SLAVE DNS:
+first.example.com A 195.211.100.1
+secondary.example.com A 195.211.100.2
+example.com CNAME secondary.example.com
+
+
+Nginx config with upstreams
+------------------------------------
+MASTER NGINX:
+upstream blabla {
+    server first.example.com;
+    server secondary.example.com backup;
+}
+server {
+servername example.com
+
+location / {
+proxy_pass http://blabla
+proxy_next_upstream error timeout http_502;
+}
+}
+
+------------------------------------
+SLAVE NGINX:
+upstream blabla {
+    server secondary.example.com;
+    server first.example.com backup;
+}
+
+server {
+servername example.com
+location / { 
+proxy_pass http://blabla   
+proxy_next_upstream error timeout http_502;
+}
+}
+
+Client requests some data, and if first server is under reqlimits or app is crashed, nginx send us to secondary server, if there is physycal problem with power or server, DNS will change Our A Record to secondary server till MASTER server goes up again
+1TB DB is not such big data for using shards or clusterisation, but we must have a SLAVE DB for avoid psysical data loss. After all we must have incremental backups of DBs to minio or S3 on both of servers every 30 mins if there is very important data.
+2 billions of request per day our config will be enough if it is no stream requests.
+For force majeure problems we can write down ansible or CI/CD scripts for fast deploing our service to shrink downtime hours. But there will be DB backups.
+ 

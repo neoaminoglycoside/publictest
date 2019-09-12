@@ -1,0 +1,70 @@
+- name: Add Nginx PPA Repository
+  apt_repository: 
+    repo: 'deb http://ppa.launchpad.net/nginx/stable/ubuntu {{ ansible_distribution_release }} main' 
+    state: present 
+    filename: nginx 
+    update_cache: yes
+  tags: nginx
+  when: install_nginx|bool == true
+
+- name: add nginx apt-key
+  apt_key: 
+    url: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x8b3981e7a6852f782cc4951600a6f0a3c300ee8c
+    state: present 
+  tags: nginx
+  when: install_nginx|bool == true
+
+- name: Install packages
+  apt:
+    name: ['nginx', 'python-passlib']
+    state: present
+    update_cache: yes
+  tags: nginx
+  when: install_nginx|bool == true
+
+- name: Starting nginx service and add to autostart if not running
+  service:
+    name: nginx
+    state: started
+    enabled: true
+  tags: nginx
+
+- name: Generate htaccess file
+  htpasswd:
+    path: /etc/nginx/passwdfordefault
+    name: "{{ htaccess_username }}"
+    password:  "{{ htaccess_password }}"
+    owner: root
+    group: www-data
+    mode: 0640
+  tags: nginx
+
+- name: Install nginx config
+  template:
+    src: nginx.conf.j2
+    dest: "/etc/nginx/sites-available/default"
+    owner: root
+    group: root
+    mode: 0644
+    force: yes
+    validate: bash -c 'nginx -t -c /dev/stdin <<< "events {worker_connections 8;} http { include %s; }"' 
+  tags: nginx
+
+- name: Create symbolic link 
+  file:
+    src: "/etc/nginx/sites-available/default"
+    dest: "/etc/nginx/sites-enabled/default"
+    state: link
+    force: yes
+  notify: reload nginx
+  tags: nginx
+
+- name: Check 200OK Code For config
+  uri:
+    url: http://127.0.0.1/
+    method: GET
+    return_content: yes
+    status_code: 200
+    headers:
+      Host: "localhost"
+  tags: nginx

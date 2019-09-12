@@ -1,0 +1,20 @@
+---
+- name: Changing Openssh port to {{ ssh_port }}
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    backup: yes
+    regexp: '^Port'
+    line: 'Port {{ ssh_port }}'
+    validate: '/usr/sbin/sshd -T -f %s'
+  tags: ssh
+
+- name: Changing Permit Login to {{ ssh_root_permit }}
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    backup: yes
+    regexp: '^PermitRootLogin'
+    line: 'PermitRootLogin {{ ssh_root_permit }}'
+    validate: '/usr/sbin/sshd -T -f %s'
+  tags: ssh
+  notify: 
+    - restart ssh

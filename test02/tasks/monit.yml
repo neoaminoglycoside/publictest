@@ -1,0 +1,36 @@
+---
+- name: Install packages monit
+  apt:
+    name: "monit"
+    state: present
+    update_cache: yes
+  tags: monit
+  when: install_monit|bool == true
+
+- name: Starting monit service if not running and add to autostart
+  service:
+    name: monit
+    state: started
+    enabled: true
+  tags: monit
+
+- name: Install monit httpd config
+  template:
+    src: monit-httpd.conf.j2
+    dest: "/etc/monit/conf-available/httpd.conf"
+    owner: root
+    group: root
+    mode: 0644
+    force: yes
+    validate: bash -c 'monit -t %s'
+  tags: monit
+
+- name: Create symbolic link
+  file:
+    src: "/etc/monit/conf-available/httpd.conf"
+    dest: "/etc/monit/conf-enabled/httpd.conf"
+    state: link
+    force: yes
+  notify: reload monit
+  tags: monit
+

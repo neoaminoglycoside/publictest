@@ -1,0 +1,7 @@
+{% if monit_port is defined %}
+set httpd port {{ monit_port }} and
+{% else %}
+set httpd port 2812 and
+{% endif %}
+use address localhost  
+allow localhost

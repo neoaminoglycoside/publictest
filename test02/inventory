@@ -1,0 +1,19 @@
+127.0.0.1  ansible_connection=local ansible_host=127.0.0.1 ansible_user=root
+
+[timezone]
+127.0.0.1
+
+[locale]
+127.0.0.1
+
+[nginx]
+127.0.0.1
+
+[user]
+127.0.0.1
+
+[monit]
+127.0.0.1
+
+[ssh]
+127.0.0.1

@@ -1,0 +1,10 @@
+---
+- name: Generate Locale if not exists
+  locale_gen:
+    name: "{{ locale }}"
+    state: present
+  tags: locale
+
+- name: set locale
+  command: /usr/sbin/update-locale LANG={{ locale }}
+  tags: locale

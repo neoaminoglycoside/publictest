@@ -1,0 +1,43 @@
+---
+- name: Create user "{{ service_account }}"
+  user:
+    name: "{{ service_account }}"
+    shell: /bin/bash
+    groups: "{{ service_account }}"
+    password: "{{ service_account_pass }}"
+    home: "/home/{{ service_account }}"	
+    append: no
+    update_password: on_create
+  when: service_account_usepassword|bool == true
+  register: account
+  tags: user
+
+- name: Create user "{{ service_account }} without password"
+  user:
+    name: "{{ service_account }}"
+    shell: /usr/sbin/nologin
+    groups: "{{ service_account }}"
+    append: no
+  when: service_account_usepassword|bool == false
+  tags: user
+
+- name: Save Username and password to file
+  shell: echo {{ service_account }} {{ service_account_pass }} > /tmp/userpwd
+  when: service_account_usepassword|bool == true and account.changed
+  tags: user
+
+- name: Get Password file from remote machine
+  fetch:
+    src: "/tmp/userpwd"
+    dest: "./userpwd"
+    flat: yes
+  when: service_account_usepassword|bool == true and account.changed 
+  tags: user
+
+- name: Allow {{ service_account }} to start restart services
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^{{ service_account }}'
+    line: '{{ service_account }} ALL = NOPASSWD: /bin/systemctl restart *,/bin/systemctl start *,/bin/systemctl stop *, /usr/sbin/service * restart,/usr/sbin/service * start,/usr/sbin/service * stop'
+    validate: 'visudo -cf %s'

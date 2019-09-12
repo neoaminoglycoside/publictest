@@ -1,0 +1,5 @@
+Checks nc,md4sum,sha1sum installed or not
+Adds line with "Access denied" content to /tmp/msg, erased all previous data in file
+Runs Password generation every 10 seconds and put it to /tmp/msg
+Runs fake web service on 8765 port which responses HTTP 200 status with content of /tmp/msg file
+I think all of this you used for bundle password generation< or for tests in CI/CD for some tasks

@@ -1,0 +1,66 @@
+- hosts: all
+  gather_facts: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+  - name: Load a variable files.
+    include_vars: "{{ lookup('first_found', possible_files) }}"
+    vars:
+      possible_files:
+        - "{{ ansible_distribution }}.yaml"
+        - "{{ ansible_os_family }}.yaml"
+        - defaults/main.yml
+    tags: [timezone,locale,ssh,user,nginx,monit]
+
+- hosts: timezone
+  become: yes
+  tasks:
+    - name: Include timezones tasks in play
+      include_tasks: tasks/timezone.yml
+  tags: timezone
+
+- hosts: locale
+  become: yes
+  tasks:    
+    - name: Include locale tasks in play
+      include_tasks: tasks/locale.yml
+  tags: locale
+
+- hosts: ssh
+  become: yes
+  tasks:      
+    - name: Include ssh tasks in play
+      include_tasks: tasks/ssh.yml
+  handlers:
+    - name: restart ssh
+      service: name=sshd state=restarted
+  tags: ssh
+
+- hosts: user
+  become: yes
+  tasks:
+    - name: Include user tasks to play
+      include_tasks: tasks/user.yml
+  tags: user
+
+- hosts: nginx
+  become: yes
+  tasks:
+    - name: Include nginx tasks to play
+      include_tasks: tasks/nginx.yml
+  handlers:
+    - name: reload nginx
+      service: name=nginx state=reloaded
+  tags: nginx
+
+- hosts: monit
+  become: yes
+  tasks:
+    - name: Include monit tasks to play
+      include_tasks: tasks/monit.yml
+  handlers:
+    - name: reload monit
+      service: name=monit state=reloaded
+  tags: monit
+
+

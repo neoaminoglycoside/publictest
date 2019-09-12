@@ -1,0 +1,16 @@
+---
+# Variables for apt tasks
+install_nginx: true
+install_monit: true
+
+timezone: Asia/Tashkent
+locale: ru_RU.UTF-8
+ssh_port: 2498
+ssh_root_permit: "no"
+monit_port: 2812 
+service_account: serviceuser
+service_account_usepassword: true
+service_account_pass: "{{ lookup('password', '/tmp/userpassword chars=ascii_letters') }}"
+
+htaccess_username: monit
+htaccess_password: tinom
