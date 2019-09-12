@@ -12,7 +12,8 @@ Bash script that sets up the following system properties on Ubuntu 18.04 server:
 * Deploy Monit server and make it autostart on reboot
 * Set Nginx to proxy requests to the Monit server with the basic auth using `monit`/`tinom` credentials.
 
-# The following variables must be set up at the top of the bash file for full functionality:
+## The following variables must be set up at the top of the bash file for full functionality:
+
 * Root privileges required
 
 Variable | Description
@@ -20,9 +21,9 @@ Variable | Description
 TIMEZONE | Timezone which will be used in system
 LOCALE | Locale which will be used in system
 SSH_PORT | ssh port which will be used in system
-SSH_ROOT_PERMIT | (yes | no) Allow root user login via ssh
+SSH_ROOT_PERMIT | (yes or no) Allow root user login via ssh
 SERVICEACCOUNT | username to create
-SERVICEACCOUNTUSEPASSWORD | (true | false) is user allowed to login
+SERVICEACCOUNTUSEPASSWORD | (true or false) is user allowed to login
 PASSWORD | User password for created user
 HTTP_LOGIN | Basic auth nginx username
 HTTP_PASSWORD | Basic auth nginx password
